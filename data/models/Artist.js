@@ -12,17 +12,15 @@ const artistSchema = new mongoose.Schema(
         picture: { type: String },
         provider: { type: String, enum: ["google", "facebook", "zklogin"], required: true },
         providerId: { type: String, required: true },
-        zkAddress: { type: String },
+        suiAddress: {type: String, required: true, unique: true},
+        suiPrivateKey: {type: String, required: true,},
         role: {type: String , enum: Object.values(Role), default: Role.ARTIST},
         distributorLink: { type: String },
         nin: { type: String, unique: true, sparse: true },
         isVerified: { type: Boolean, default: false },
-        verificationStatus: {
-            type: String,
-            enum: Object.values(Status),
-            default: Status.PENDING,
-        },
+        verificationStatus: {type: String, enum: Object.values(Status), default: Status.PENDING,},
     },
+
     { timestamps: true }
 );
 

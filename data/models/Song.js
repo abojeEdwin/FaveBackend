@@ -12,6 +12,7 @@ const songSchema = new mongoose.Schema(
         releaseDate: { type: Date },
         coverArtUrl: { type: String },
         audioFileUrl: { type: String },
+        royaltyPercentage: { type: Number, required: true },
         status: {
             type: String,
             enum: Object.values(SongStatus),
