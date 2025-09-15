@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import Role from "../../Enum/Role.js";
-import Status from "../../Enum/Status";
+import Role from "../../enum/Role.js";
+import Status from "../../enum/Status";
 
 const artistSchema = new mongoose.Schema(
     {

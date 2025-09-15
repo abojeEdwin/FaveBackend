@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Role from "../../Enum/Role";
+import Role from "../../enum/Role";
 
 const fanSchema = new mongoose.Schema(
     {
