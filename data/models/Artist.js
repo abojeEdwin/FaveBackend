@@ -35,8 +35,8 @@ const artistSchema = new mongoose.Schema(
         nin: { type: String, unique: true, sparse: true },
         isVerified: { type: Boolean, default: false },
         verificationStatus: {type: String, enum: Object.values(Status), default: Status.PENDING},
-        createdAt: {type: Date, default: Date.now,},
-        lastLogin: {type: Date, default: Date.now,},
+        createdAt: {type: Date, default: Date.now},
+        lastLogin: {type: Date, default: Date.now},
     },
 
     { timestamps: true }

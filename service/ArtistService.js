@@ -10,17 +10,12 @@ import {generateSessionToken} from "../utils/helper";
 export const login = async (req, res) => {
     try {
         const { idToken } = req.body;
-
         if (!idToken) {
-            return res.status(400).json({ error: "Missing idToken" });
-        }
-
+            return res.status(400).json({ error: "Missing idToken" });}
         const decodedToken = await verifyJWT.verifyJWT(idToken);
-
         const { sub: authProviderId, email, name, picture } = decodedToken;
+
         let foundArtist = await Artist.findOne({ authProviderId });
-
-
         if (!foundArtist) {
             const keypair = new Ed25519Keypair();
             const suiAddress = keypair.getPublicKey().toSuiAddress();
