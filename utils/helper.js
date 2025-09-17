@@ -10,7 +10,7 @@ let cachedGooglePublicKeys = null;
 let keysLastFetched = 0;
 
 export function generateSessionToken(userId) {
-    return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "1d" });
 }
 
 export async function getGooglePublicKeys() {

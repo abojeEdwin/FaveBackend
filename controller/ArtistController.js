@@ -35,8 +35,7 @@ export const login = async (req, res) => {
             await foundArtist.save();
         } else {
             foundArtist.lastLogin = new Date();
-            await foundArtist.save();
-        }
+            await foundArtist.save();}
         const sessionToken = generateSessionToken(foundArtist._id);
         res.json({
             success: true,
@@ -80,4 +79,6 @@ export const verifyArtist = async (req, res) => {
         res.status(500).json({success: false, error: "Internal server error"});
     }
 };
+
+export default {login, verifyArtist};
 
