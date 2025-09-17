@@ -43,4 +43,5 @@ export const login = async (req, res) => {
         console.error("zkLogin authentication error:", error);
         res.status(401).json({ success: false, error: error.message });
     }
-}
+};
+
