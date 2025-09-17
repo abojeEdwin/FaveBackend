@@ -1,8 +1,8 @@
 import {verifyJWT,generateSessionToken} from "../utils/helper.js"
 import Fan from "../data/models/Fan.js";
 import {Ed25519Keypair} from "@mysten/sui.js/keypairs/ed25519";
-import  Role from "../enum/Role";
-import Status from "../enum/Status.js";
+import  Role from "../enum/Role.js";
+
 
 
 export const login = async (req, res) => {
@@ -47,4 +47,5 @@ export const login = async (req, res) => {
         console.error("zkLogin authentication error:", error);
         res.status(401).json({success: false, error: error.message});
     }
-}
+};
+

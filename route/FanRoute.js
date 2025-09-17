@@ -1,7 +1,9 @@
-import express from 'express';
+import express from "express";
+import {login, register} from "../controller/FanController.js";
+
 const router = express.Router();
 
-export default (controller)=>{
-    router.post('/login',controller.login);
-    return router;
-};
+router.post("/login", login);
+
+
+export default router;
