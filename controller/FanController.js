@@ -1,5 +1,5 @@
 import {verifyJWT,generateSessionToken} from "../utils/helper.js"
-import Artist from "../data/models/Artist.js";
+import Fan from "../data/models/Fan.js";
 import {Ed25519Keypair} from "@mysten/sui.js/keypairs/ed25519";
 import  Role from "../enum/Role";
 import Status from "../enum/Status.js";
@@ -13,38 +13,34 @@ export const login = async (req, res) => {
         const decodedToken = await verifyJWT(idToken);
         const {sub: authProviderId, email, name, picture} = decodedToken;
 
-        let foundArtist = await Artist.findOne({ authProviderId });
-        if (!foundArtist) {
+        let foundFan = await Fan.findOne({ authProviderId });
+        if (!foundFan) {
             const keypair = new Ed25519Keypair();
             const suiAddress = keypair.getPublicKey().toSuiAddress();
 
-            foundArtist = new Artist({
+            foundFan = new Fan({
                 authProviderId,
                 providerId: authProviderId,
                 provider: decodedToken.iss,
                 profile: { name, email, picture },
-                role: Role.ARTIST,
-                distributorLink: "",
-                nin: "",
-                isVerified: false,
-                verificationStatus: Status.PENDING,
+                role: Role.FAN,
                 suiAddress,
                 suiPrivateKey: keypair.getSecretKey().toString("base64"),
                 createdAt: new Date(),
             });
-            await foundArtist.save();
+            await foundFan.save();
         } else {
-            foundArtist.lastLogin = new Date();
-            await foundArtist.save();
+            foundFan.lastLogin = new Date();
+            await foundFan.save();
         }
-        const sessionToken = generateSessionToken(foundArtist._id);
+        const sessionToken = generateSessionToken(foundFan._id);
         res.json({
             success: true,
             sessionToken,
             artist: {
-                id: foundArtist._id,
-                suiAddress: foundArtist.suiAddress,
-                profile: foundArtist.profile,
+                id: foundFan._id,
+                suiAddress: foundFan.suiAddress,
+                profile: foundFan.profile,
             },
         });
     }catch(error){

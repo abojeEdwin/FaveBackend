@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 import  jwtDecode  from "jwt-decode";
-import {Ed25519Keypair}  from "@mysten/sui.js/keypairs/ed25519";
 import jwkToPem from "jwk-to-pem";
 import dotenv from "dotenv";
 dotenv.config();
@@ -16,9 +15,7 @@ export function generateSessionToken(userId) {
 
 export async function getGooglePublicKeys() {
     if (cachedGooglePublicKeys && Date.now() - keysLastFetched < 3600000) {
-        return cachedGooglePublicKeys;
-    }
-
+        return cachedGooglePublicKeys;}
     try {
         const response = await fetch(GOOGLE_PUBLIC_KEYS_URL);
         const data = await response.json();
@@ -33,22 +30,19 @@ export async function getGooglePublicKeys() {
 
 export async function verifyJWT(token) {
     try {
-        const header = jwtDecode((token, { header: true }));
+        const header = jwtDecode.jwtDecode((token, { header: true }));
         const publicKeys = await getGooglePublicKeys();
 
         const key = publicKeys.keys.find((k) => k.kid === header.kid);
         if (!key) {
             new Error("Invalid token: no matching key found");
         }
-
         const pem = jwkToPem(key);
-
         const decoded = jwt.verify(token, pem, {
             algorithms: ["RS256"],
             audience: process.env.GOOGLE_CLIENT_ID,
             issuer: ["https://accounts.google.com", "accounts.google.com"],
         });
-
         return decoded;
     } catch (error) {
         console.error("JWT verification failed:", error);
