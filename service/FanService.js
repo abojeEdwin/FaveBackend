@@ -1,9 +1,7 @@
-import verifyJWT, {generateSessionToken} from "../utils/helper";
+import {generateSessionToken,verifyJWT} from "../utils/helper";
 import Fan from "../data/models/Fan";
-import Ed25519Keypair from "@mysten/sui.js/keypairs/ed25519";
+import {Ed25519Keypair} from "@mysten/sui.js/keypairs/ed25519";
 import Role from "../enum/Role";
-import Status from "../enum/Status";
-
 
 export const login = async (req, res) => {
 

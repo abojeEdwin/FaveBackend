@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import artistModel from "../data/models/Artist.js";
 import Status from "../enum/Status.js";
+import artist from "../data/models/Artist.js";
 
 jest.unstable_mockModule("../utils/helper.js", () => ({
     verifyJWT: jest.fn(),
