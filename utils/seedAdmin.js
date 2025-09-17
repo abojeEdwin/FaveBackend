@@ -1,4 +1,4 @@
-import Admin  from "./../data/models/Admin";
+import Admin from "./../data/models/Admin.js";
 
 
 async function seedAdmin() {
