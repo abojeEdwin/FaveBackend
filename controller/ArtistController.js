@@ -1,7 +1,7 @@
 import {verifyJWT,generateSessionToken} from "../utils/helper.js"
 import Artist from "../data/models/Artist.js";
 import {Ed25519Keypair} from "@mysten/sui.js/keypairs/ed25519";
-import  Role from "../enum/Role";
+import  Role from "../enum/Role.js";
 import Status from "../enum/Status.js";
 
 
@@ -79,6 +79,11 @@ export const verifyArtist = async (req, res) => {
         res.status(500).json({success: false, error: "Internal server error"});
     }
 };
+
+
+export const listSong = async (req, res) =>{
+
+}
 
 export default {login, verifyArtist};
 
