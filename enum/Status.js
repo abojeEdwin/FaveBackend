@@ -3,4 +3,4 @@ const Status ={
     APPROVED: "approved",
     REJECTED: "rejected",
 }
-module.exports = Status;
+export default Status;

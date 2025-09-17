@@ -1,4 +1,4 @@
-const Admin = require("./../data/models/Admin");
+import Admin  from "./../data/models/Admin";
 
 
 async function seedAdmin() {
@@ -24,4 +24,4 @@ async function seedAdmin() {
         console.error("Error seeding admin:", err.message);
     }
 }
-module.exports = seedAdmin;
+export default seedAdmin;

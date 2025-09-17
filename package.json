@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@jest/globals": "^30.1.2",
     "@mysten/sui.js": "^0.54.1",
     "bcryptjs": "^3.0.2",
     "dotenv": "^17.2.2",
@@ -13,5 +14,14 @@
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
     "passport-oauth2": "^1.8.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "mongodb-memory-server": "^10.2.1",
+    "supertest": "^7.1.4"
+  },
+  "type": "module",
+  "scripts": {
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   }
 }

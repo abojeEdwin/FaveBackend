@@ -1,7 +1,6 @@
 const Role ={
-    ADMIN: "admin",
-    FAN : "fan",
-    ARTIST : "artist",
+    ADMIN: "ADMIN",
+    FAN : "FAN",
+    ARTIST : "ARTIST",
 }
-
-module.exports = Role;
+export default Role;

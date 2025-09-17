@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import  jwtDecode  from "jwt-decode";
-import Ed25519Keypair  from "@mysten/sui.js/keypairs/ed25519";
+import {Ed25519Keypair}  from "@mysten/sui.js/keypairs/ed25519";
 import jwkToPem from "jwk-to-pem";
 import dotenv from "dotenv";
 dotenv.config();
@@ -10,11 +10,11 @@ const GOOGLE_PUBLIC_KEYS_URL = "https://www.googleapis.com/oauth2/v3/certs";
 let cachedGooglePublicKeys = null;
 let keysLastFetched = 0;
 
-function generateSessionToken(userId) {
+export function generateSessionToken(userId) {
     return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
 }
 
-async function getGooglePublicKeys() {
+export async function getGooglePublicKeys() {
     if (cachedGooglePublicKeys && Date.now() - keysLastFetched < 3600000) {
         return cachedGooglePublicKeys;
     }
@@ -31,9 +31,9 @@ async function getGooglePublicKeys() {
     }
 }
 
-async function verifyJWT(token) {
+export async function verifyJWT(token) {
     try {
-        const header = jwtDecode.jwtDecode((token, { header: true }));
+        const header = jwtDecode((token, { header: true }));
         const publicKeys = await getGooglePublicKeys();
 
         const key = publicKeys.keys.find((k) => k.kid === header.kid);
@@ -56,4 +56,4 @@ async function verifyJWT(token) {
     }
 }
 
-module.exports = { generateSessionToken, verifyJWT };
+
