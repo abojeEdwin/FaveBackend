@@ -3,4 +3,4 @@ const SongStatus = {
     LISTED : "LISTED",
     SOLD_OUT: "SOLD_OUT"
 }
-module.exports = SongStatus;
+export default SongStatus;

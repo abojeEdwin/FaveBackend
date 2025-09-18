@@ -1,9 +1,12 @@
 import {verifyJWT,generateSessionToken} from "../utils/helper.js"
 import Artist from "../data/models/Artist.js";
 import {Ed25519Keypair} from "@mysten/sui.js/keypairs/ed25519";
+import {TransactionBlock}  from '@mysten/sui.js/transactions';
+import { getClient, signAndExecute } from '../utils/sui-utils';
 import  Role from "../enum/Role.js";
 import Status from "../enum/Status.js";
-import song from "../data/models/Song.js";
+import SongStatus from "../enum/SongStatus.js";
+import Song from "../data/models/Song.js";
 
 
 export const login = async (req, res) => {
@@ -86,8 +89,30 @@ export const listSong = async (req, res) =>{
     try{
         const{artistId} = req.params;
         const{song}= req.body;
-    }catch (err){}
-}
+
+        const foundSong  = await Song.findOne({title: song.songName});
+        if (!foundSong) {
+            const newSong = new Song({
+                title: song.songName,
+                releaseDate: song.releaseDate,
+                royaltyPercentage: song.royaltyPercentage,
+                status: SongStatus.PENDING,
+                artist: artistId,
+                description: song.description,
+                genre: song.genre,
+                image: song.coverArtUrl,
+                audio: song.audioFileUrl,
+            })
+            await newSong.save();
+        }
+        else{
+            return res.status(400).json({error: "Song already exists, Try listing another song"});
+        }
+    }catch (err){
+        console.error("Error listing song:", err);
+        res.status(500).json({success: false, error: "Internal server error"});
+    }
+};
 
 const addLiquidity = async (req, res) => {}
 
