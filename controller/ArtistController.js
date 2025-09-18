@@ -1,8 +1,8 @@
 import {verifyJWT,generateSessionToken} from "../utils/helper.js"
 import Artist from "../data/models/Artist.js";
 import {Ed25519Keypair} from "@mysten/sui.js/keypairs/ed25519";
-import {TransactionBlock}  from '@mysten/sui.js/transactions';
-import { getClient, signAndExecute } from '../utils/sui-utils';
+//import {TransactionBlock}  from '@mysten/sui.js/transactions';
+//import { getClient, signAndExecute } from '../utils/sui-utils';
 import  Role from "../enum/Role.js";
 import Status from "../enum/Status.js";
 import SongStatus from "../enum/SongStatus.js";
@@ -112,6 +112,8 @@ export const listSong = async (req, res) =>{
         console.error("Error listing song:", err);
         res.status(500).json({success: false, error: "Internal server error"});
     }
+
+    //This method is supposed to make a call to the move smart contract
 };
 
 const addLiquidity = async (req, res) => {}
