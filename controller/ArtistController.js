@@ -3,6 +3,7 @@ import Artist from "../data/models/Artist.js";
 import {Ed25519Keypair} from "@mysten/sui.js/keypairs/ed25519";
 import  Role from "../enum/Role.js";
 import Status from "../enum/Status.js";
+import song from "../data/models/Song.js";
 
 
 export const login = async (req, res) => {
@@ -82,8 +83,13 @@ export const verifyArtist = async (req, res) => {
 
 
 export const listSong = async (req, res) =>{
-
+    try{
+        const{artistId} = req.params;
+        const{song}= req.body;
+    }catch (err){}
 }
+
+const addLiquidity = async (req, res) => {}
 
 export default {login, verifyArtist};
 
