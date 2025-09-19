@@ -1,8 +1,9 @@
 import {verifyJWT,generateSessionToken} from "../utils/helper.js"
 import Artist from "../data/models/Artist.js";
 import {Ed25519Keypair} from "@mysten/sui.js/keypairs/ed25519";
-//import {TransactionBlock}  from '@mysten/sui.js/transactions';
-//import { getClient, signAndExecute } from '../utils/sui-utils';
+import { genAddressSeed, getZkLoginSignature } from '@mysten/sui/zklogin';
+import { SuiClient, Transaction } from '@mysten/sui.js';
+import { TransactionBlock } from '@mysten/sui.js';
 import  Role from "../enum/Role.js";
 import Status from "../enum/Status.js";
 import SongStatus from "../enum/SongStatus.js";
@@ -90,6 +91,10 @@ export const listSong = async (req, res) =>{
         const{artistId} = req.params;
         const{song}= req.body;
 
+        const foundArtist = await Artist.findById({artistId})
+        if(foundArtist.verificationStatus === Status.PENDING) {
+
+        }
         const foundSong  = await Song.findOne({title: song.songName});
         if (!foundSong) {
             const newSong = new Song({
@@ -103,7 +108,62 @@ export const listSong = async (req, res) =>{
                 image: song.coverArtUrl,
                 audio: song.audioFileUrl,
             })
+
             await newSong.save();
+            res.json({success: true, message: "Song listed successfully", songId: newSong._id});
+
+            const txb = new TransactionBlock();
+
+// 2. Add a call to your Move contract's mint function
+// Replace '0xYourPackage', 'your_module', 'mint', and args as needed
+            txb.moveCall({
+                target: '0xYourPackage::your_module::mint',
+                arguments: [
+                    txb.pure(songId),         // e.g., song ID or metadata
+                    txb.pure(escrowAddress),  // e.g., escrow address
+                    // ...other arguments as required by your Move function
+                ],
+            });
+
+// 3. Set the sender (the zkLogin user address)
+            txb.setSender(zkLoginUserAddress);
+
+            / 1. Generate ephemeral keypair (should be cached per session)
+            const ephemeralKeyPair = new Ed25519Keypair();
+
+// 2. Create a transaction and set the sender
+            const client = new SuiClient({ url: '<YOUR_RPC_URL>' });
+            txb.setSender(zkLoginUserAddress); // This is the address derived from zkLogin
+
+// 3. Sign the transaction bytes with the ephemeral keypair
+            const { bytes, signature: userSignature } = await txb.sign({
+                client,
+                signer: ephemeralKeyPair,
+            });
+
+// 4. Generate the address seed
+            const addressSeed = genAddressSeed(
+                BigInt(userSalt), // userSalt should be a BigInt
+                'sub',            // claimName, usually 'sub'
+                decodedJwt.sub,   // subject from the decoded JWT
+                decodedJwt.aud    // audience from the decoded JWT
+            ).toString();
+
+// 5. Generate the zkLogin signature
+            const zkLoginSignature = getZkLoginSignature({
+                inputs: {
+                    ...partialZkLoginSignature, // This comes from your ZK proof response
+                    addressSeed,
+                },
+                maxEpoch,
+                userSignature,
+            });
+
+// 6. Execute the transaction
+            await client.executeTransactionBlock({
+                transactionBlock: bytes,
+                signature: zkLoginSignature,
+            });
         }
         else{
             return res.status(400).json({error: "Song already exists, Try listing another song"});
@@ -112,11 +172,11 @@ export const listSong = async (req, res) =>{
         console.error("Error listing song:", err);
         res.status(500).json({success: false, error: "Internal server error"});
     }
-
-    //This method is supposed to make a call to the move smart contract
 };
 
-const addLiquidity = async (req, res) => {}
+const addLiquidity = async (req, res) => {
+    //This function is supposed to intreact with the smart contract to fund the wallet in the escrow
+}
 
-export default {login, verifyArtist};
+export default {login, verifyArtist, listSong, addLiquidity};
 
