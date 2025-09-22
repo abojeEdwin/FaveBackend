@@ -1,9 +1,9 @@
 import {verifyJWT,generateSessionToken} from "../utils/helper.js"
 import Artist from "../data/models/Artist.js";
 import {Ed25519Keypair} from "@mysten/sui.js/keypairs/ed25519";
-import { genAddressSeed, getZkLoginSignature } from '@mysten/sui/zklogin';
-import { SuiClient, Transaction } from '@mysten/sui.js';
-import { TransactionBlock } from '@mysten/sui.js';
+// import { genAddressSeed, getZkLoginSignature } from '@mysten/sui/zklogin';
+// import { SuiClient, Transaction } from '@mysten/sui.js';
+// import { TransactionBlock } from '@mysten/sui.js';
 import  Role from "../enum/Role.js";
 import Status from "../enum/Status.js";
 import SongStatus from "../enum/SongStatus.js";
@@ -181,6 +181,7 @@ export const listSong = async (req, res) =>{
 
 const addLiquidity = async (req, res) => {
     //This function is supposed to intreact with the smart contract to fund the wallet in the escrow
+    return null;
 }
 
 export default {login, verifyArtist, listSong, addLiquidity};
