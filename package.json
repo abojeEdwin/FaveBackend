@@ -4,6 +4,7 @@
     "@mysten/sui": "^1.38.0",
     "@mysten/sui.js": "^0.54.1",
     "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",

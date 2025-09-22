@@ -4,11 +4,37 @@ import seedAdmin from "./utils/seedAdmin.js";
 import dotenv from "dotenv";
 import artistRouter from "./route/ArtistRoute.js";
 import fanRouter from "./route/FanRoute.js";
+import cors from "cors";
 dotenv.config();
 
 
 export const app = express();
 app.use(express.json())
+
+app.use(cors())
+
+const allowedOrigins = [
+    process.env.FRONTEND_URL, // Your deployed frontend URL from Render
+    'http://localhost:5174',  // Including both common dev ports
+    'http://localhost:5173'
+];
+
+const corsOptions = {
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD'],
+};
+
+app.use(cors(corsOptions));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 
 app.use('/api/artists', artistRouter)
