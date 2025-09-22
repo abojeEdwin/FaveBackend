@@ -9,9 +9,7 @@ dotenv.config();
 
 app.use(express.json())
 
-app.use(cors())
-
-const express = require('express');
+app.use(cors());
 const app = express();
 
 // Add CORS middleware to allow requests from http://localhost:5173
