@@ -12,7 +12,7 @@ import Song from "../data/models/Song.js";
 
 export const login = async (req, res) => {
     try {
-        const {idToken} = req.body;
+        const {idToken} = req.params;
         if (!idToken) {
             return res.status(400).json({error: "Missing idToken"});}
         const decodedToken = await verifyJWT(idToken);
