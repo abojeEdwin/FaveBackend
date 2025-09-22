@@ -14,6 +14,7 @@ const app = express();
 // Allowed origins for CORS
 const allowedOrigins = [
     "http://localhost:5174",
+    "http://localhost:5173"
 ];
 
 const corsOptions = {
@@ -25,7 +26,7 @@ const corsOptions = {
         }
     },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD"],
+    methods: ["GET", "POST", "PUT", "PATCH", "HEAD"],
 };
 
 app.use(cors(corsOptions));
