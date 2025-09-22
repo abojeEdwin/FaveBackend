@@ -50,7 +50,9 @@ export const login = async (req, res) => {
 };
 
 
-const buySong = async (req, res) => {}
+const buySong = async (req, res) => {
+
+}
 const viewListedSongs = async (req, res) => {}
 const viewArtistProfile = async (req, res) => {}
 

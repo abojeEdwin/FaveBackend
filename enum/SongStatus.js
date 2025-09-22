@@ -1,6 +1,5 @@
 const SongStatus = {
-    PENDING : "PENDING",
-    LISTED : "LISTED",
-    SOLD_OUT: "SOLD_OUT"
+    STATUS_LOCKED : "LOCKED",
+    STATUS_OPEN : "OPEN",
 }
 export default SongStatus;

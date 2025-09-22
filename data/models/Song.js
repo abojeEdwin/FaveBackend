@@ -16,7 +16,8 @@ const songSchema = new mongoose.Schema(
         status: {
             type: String,
             enum: Object.values(SongStatus),
-            default: SongStatus.PENDING,
+            default: SongStatus.STATUS_LOCKED,
+            required: true,
         },
     },
     { timestamps: true }
