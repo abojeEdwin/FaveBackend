@@ -6,6 +6,11 @@ import artistRouter from "./route/ArtistRoute.js";
 import fanRouter from "./route/FanRoute.js";
 import cors from "cors";
 
+import login  from "./controller/ArtistController.js";
+
+const router = express.Router();
+
+
 dotenv.config();
 
 // Initialize app FIRST
@@ -36,6 +41,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/artists", artistRouter);
 app.use("/api/fan", fanRouter);
+export default app;
 
 app.get("/", (_req, res) => res.send("🚀 Task Manager API is running..."));
 
