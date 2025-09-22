@@ -30,19 +30,16 @@ const corsOptions = {
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD"],
 };
 
-// Middleware
 app.use(cors(corsOptions));
 app.options(/.*/, cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
 app.use("/api/artists", artistRouter);
 app.use("/api/fan", fanRouter);
 
 app.get("/", (_req, res) => res.send("🚀 Task Manager API is running..."));
 
-// MongoDB connection + server start
 const PORT = process.env.PORT || 3000;
 
 mongoose
