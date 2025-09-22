@@ -7,11 +7,32 @@ import fanRouter from "./route/FanRoute.js";
 import cors from "cors";
 dotenv.config();
 
-
-export const app = express();
 app.use(express.json())
 
 app.use(cors())
+
+const express = require('express');
+const app = express();
+
+// Add CORS middleware to allow requests from http://localhost:5173
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // Include all allowed methods
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Include all allowed headers
+    next();
+});
+
+//
+// // Example login route
+// app.post('/api/fan/login', (req, res) => {
+//     // ... login logic ...
+//     res.send('Login successful');
+// });
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
 
 const allowedOrigins = [
     process.env.FRONTEND_URL, // Your deployed frontend URL from Render
@@ -29,7 +50,7 @@ const corsOptions = {
         }
     },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'HEAD'],
+    methods: ['GET', 'POST', 'PUT','DELETE', 'PATCH', 'HEAD'],
 };
 
 app.use(cors(corsOptions));
