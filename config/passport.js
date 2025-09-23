@@ -6,7 +6,6 @@ import Role from '../enum/Role.js';
 import Status from '../enum/Status.js';
 import { Ed25519Keypair } from '@mysten/sui.js/keypairs/ed25519';
 
-// Only configure Google Strategy if environment variables are set
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.GOOGLE_CALLBACK_URL) {
   passport.use(new GoogleStrategy.Strategy({
       clientID: process.env.GOOGLE_CLIENT_ID,
@@ -15,7 +14,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.
     },
     async function(accessToken, refreshToken, profile, done) {
       try {
-        // Check if user exists in either Artist or Fan collection
+
         let user = await Artist.findOne({ 'profile.email': profile.emails[0].value });
         
         if (!user) {
@@ -23,12 +22,12 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.
         }
         
         if (user) {
-          // Update last login
+
           user.lastLogin = new Date();
           await user.save();
           return done(null, user);
         } else {
-          // Create new user - default to Artist role
+
           const keypair = new Ed25519Keypair();
           const suiAddress = keypair.getPublicKey().toSuiAddress();
           
@@ -64,12 +63,10 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.
   console.warn('⚠️  Google OAuth not configured: Missing environment variables');
 }
 
-// Serialize user for session
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
-// Deserialize user from session
 passport.deserializeUser(async (id, done) => {
   try {
     let user = await Artist.findById(id);

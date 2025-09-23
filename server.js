@@ -5,9 +5,9 @@ import dotenv from "dotenv";
 import artistRouter from "./route/ArtistRoute.js";
 import fanRouter from "./route/FanRoute.js";
 import cors from "cors";
-import session from "express-session";
 import authRouter from "./route/AuthRoute.js";
 import passport from "./config/passport.js";
+import session from "express-session";
 
 // Load environment variables
 dotenv.config();
@@ -32,7 +32,8 @@ app.use(passport.session());
 
 // Configure CORS for both development and production
 const allowedOrigins = [
-  "http://localhost:3001", // Local development frontend
+  "http://localhost:3000", // Local development frontend
+    "https://fave-frontend.onrender.com",
   "https://favefrontend.onrender.com", // Update this to your actual frontend URL when deployed
   // Add your Render frontend URL when you have it
   process.env.FRONTEND_URL // Any custom frontend URL from environment variables
