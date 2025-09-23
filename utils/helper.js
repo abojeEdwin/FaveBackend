@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import  jwtDecode  from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 import jwkToPem from "jwk-to-pem";
 import dotenv from "dotenv";
 dotenv.config();
@@ -30,7 +30,7 @@ export async function getGooglePublicKeys() {
 
 export async function verifyJWT(token) {
     try {
-        const header = jwtDecode.jwtDecode((token, { header: true }));
+        const header = jwtDecode(token, { header: true });
         const publicKeys = await getGooglePublicKeys();
 
         const key = publicKeys.keys.find((k) => k.kid === header.kid);
@@ -49,5 +49,3 @@ export async function verifyJWT(token) {
         throw new Error("Invalid authentication token");
     }
 }
-
-
