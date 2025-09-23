@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import  {jwtDecode } from "jwt-decode";
+import  jwtDecode  from "jwt-decode";
 import jwkToPem from "jwk-to-pem";
 import dotenv from "dotenv";
 dotenv.config();
