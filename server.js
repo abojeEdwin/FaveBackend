@@ -30,7 +30,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Configure CORS for both development and production
 const allowedOrigins = [
     "http://localhost:3000", // Local development frontend
     process.env.FRONTEND_URL, // Deployed frontend URL from environment variable
@@ -38,10 +37,8 @@ const allowedOrigins = [
 
 const corsOptions = {
     origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
 
-        // Check if origin is in allowed list
         if (allowedOrigins.some(allowedOrigin => origin.startsWith(allowedOrigin))) {
             callback(null, true);
         } else {
