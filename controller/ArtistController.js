@@ -29,8 +29,8 @@ export const login = async (req, res) => {
                 provider: decodedToken.iss,
                 profile: { name, email, picture },
                 role: Role.ARTIST,
-                distributorLink: "",
-                nin: undefined, // Set to undefined instead of empty string to avoid duplicate key error
+                distributorLink: undefined,
+                nin: undefined,
                 isVerified: false,
                 verificationStatus: Status.PENDING,
                 suiAddress,
@@ -180,7 +180,7 @@ export const listSong = async (req, res) =>{
 };
 
 const addLiquidity = async (req, res) => {
-    //This function is supposed to intreact with the smart contract to fund the wallet in the escrow
+    //This function is supposed to interact with the smart contract to fund the wallet in the escrow
     return null;
 }
 
