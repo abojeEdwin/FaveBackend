@@ -21,8 +21,13 @@ router.get('/google/callback',
       suiAddress: req.user.suiAddress
     };
     
-    // Redirect to frontend application running on port 3001
-    res.redirect(`http://localhost:3001/auth/success?user=${encodeURIComponent(JSON.stringify(userData))}`);
+    // Check if we're in production or development
+    const frontendUrl = process.env.NODE_ENV === 'production' 
+      ? 'https://favefrontend.onrender.com' // Update this to your actual frontend URL when deployed
+      : 'http://localhost:3001';
+    
+    // Redirect to frontend application
+    res.redirect(`${frontendUrl}/auth/success?user=${encodeURIComponent(JSON.stringify(userData))}`);
   }
 );
 
