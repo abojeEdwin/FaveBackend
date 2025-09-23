@@ -1,5 +1,5 @@
 import express from 'express';
-import {login, verifyArtist} from "../controller/ArtistController.js";
+import {login, verifyArtist, listSong} from "../controller/ArtistController.js";
 const router = express.Router();
 
 // Google (or any OAuth provider) will redirect here after login
@@ -27,5 +27,6 @@ router.get("/callback", async (req, res) => {
 
 
 router.post('/verifyArtist',verifyArtist)
+router.post('/:artistId/listSong', listSong)
 
 export default router;

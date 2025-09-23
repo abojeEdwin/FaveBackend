@@ -21,10 +21,8 @@ router.get('/google/callback',
       suiAddress: req.user.suiAddress
     };
     
-    // In a real application, you would typically generate a JWT token here
-    // For now, we'll redirect with user data in query parameters
-    // Note: In production, use a more secure method to pass user data
-    res.redirect(`http://localhost:5173/auth/success?user=${encodeURIComponent(JSON.stringify(userData))}`);
+    // Redirect to frontend application running on port 3001
+    res.redirect(`http://localhost:3001/auth/success?user=${encodeURIComponent(JSON.stringify(userData))}`);
   }
 );
 

@@ -3,6 +3,7 @@ import GoogleStrategy from 'passport-google-oauth20';
 import Artist from '../data/models/Artist.js';
 import Fan from '../data/models/Fan.js';
 import Role from '../enum/Role.js';
+import Status from '../enum/Status.js'; // Import Status enum
 import { Ed25519Keypair } from '@mysten/sui.js/keypairs/ed25519';
 
 passport.use(new GoogleStrategy.Strategy({
@@ -40,9 +41,9 @@ passport.use(new GoogleStrategy.Strategy({
           },
           role: Role.ARTIST,
           distributorLink: '',
-          nin: '',
+          nin: undefined, // Set to undefined instead of empty string to avoid duplicate key error
           isVerified: false,
-          verificationStatus: 'PENDING',
+          verificationStatus: Status.PENDING, // Use the enum value instead of string
           suiAddress,
           suiPrivateKey: keypair.getSecretKey().toString('base64'),
           createdAt: new Date(),

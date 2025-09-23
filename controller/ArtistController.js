@@ -30,7 +30,7 @@ export const login = async (req, res) => {
                 profile: { name, email, picture },
                 role: Role.ARTIST,
                 distributorLink: "",
-                nin: "",
+                nin: undefined, // Set to undefined instead of empty string to avoid duplicate key error
                 isVerified: false,
                 verificationStatus: Status.PENDING,
                 suiAddress,

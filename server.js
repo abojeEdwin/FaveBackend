@@ -5,9 +5,9 @@ import dotenv from "dotenv";
 import artistRouter from "./route/ArtistRoute.js";
 import fanRouter from "./route/FanRoute.js";
 import cors from "cors";
-import passport from "passport";
 import session from "express-session";
 import authRouter from "./route/AuthRoute.js";
+import passport from "./config/passport.js"; // Import our configured passport
 
 // Load environment variables
 dotenv.config();
@@ -29,8 +29,7 @@ app.use(passport.session());
 
 // Allowed origins for CORS
 const allowedOrigins = [
-    "http://localhost:5174",
-    "http://localhost:5173"
+    "http://localhost:3001"  // Add frontend development server
 ];
 
 const corsOptions = {
