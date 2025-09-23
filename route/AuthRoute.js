@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/google', 
   passport.authenticate('google', { 
     scope: ['profile', 'email'], 
-    prompt: 'select_account consent' 
+    prompt: process.env.NODE_ENV === 'production' ? 'select_account' : 'select_account consent'
   })
 );
 
@@ -24,10 +24,11 @@ router.get('/google/callback',
       suiAddress: req.user.suiAddress
     };
     
-    // For development, redirect to localhost:3001
     // Determine frontend URL based on environment
     const frontendUrl = process.env.FRONTEND_URL || 
-      (process.env.NODE_ENV === 'production' ? 'https://favefrontend.onrender.com' : 'http://localhost:3001');
+      (process.env.NODE_ENV === 'production' 
+        ? `https://${process.env.RENDER_SERVICE_NAME || 'fave-frontend'}.onrender.com` 
+        : 'http://localhost:3001');
     
     // Redirect to frontend application
     res.redirect(`${frontendUrl}/auth/success?user=${encodeURIComponent(JSON.stringify(userData))}`);

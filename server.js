@@ -22,7 +22,8 @@ app.use(session({
   saveUninitialized: false,
   cookie: { 
     secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
 
@@ -33,7 +34,7 @@ app.use(passport.session());
 // Configure CORS for both development and production
 const allowedOrigins = [
   "http://localhost:3001", // Local development frontend
-  // Add your production frontend URL when you have it
+  "https://fave-frontend.onrender.com", // Default Render frontend URL
   process.env.FRONTEND_URL // Any custom frontend URL from environment variables
 ].filter(Boolean); // Remove any falsy values
 
@@ -43,7 +44,10 @@ const corsOptions = {
     if (!origin) return callback(null, true);
     
     // Check if origin is in allowed list
-    if (allowedOrigins.some(allowedOrigin => origin.startsWith(allowedOrigin))) {
+    if (allowedOrigins.some(allowedOrigin => 
+      origin.startsWith(allowedOrigin) || 
+      (process.env.NODE_ENV === 'production' && origin.includes('onrender.com'))
+    )) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
@@ -51,11 +55,12 @@ const corsOptions = {
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "HEAD", "DELETE"],
+  optionsSuccessStatus: 200
 };
 
 app.use(cors(corsOptions));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Routes
 app.use("/api/artists", artistRouter);
@@ -64,17 +69,27 @@ app.use("/auth", authRouter);
 
 app.get("/", (_req, res) => res.send("🚀 Fave Backend API is running..."));
 
+app.get("/health", (_req, res) => {
+  const healthCheck = {
+    uptime: process.uptime(),
+    message: "OK",
+    timestamp: Date.now(),
+    mongodb: mongoose.connection.readyState === 1 ? "connected" : "disconnected"
+  };
+  res.status(200).json(healthCheck);
+});
+
 const PORT = process.env.PORT || 3000;
 
 // Add detailed error handling for MongoDB connection
 mongoose.connection.on('error', err => {
   console.error('❌ MongoDB connection error:', err);
-  console.error('Make sure MongoDB is running on your machine and the MONGO_URI in .env is correct');
+  console.error('Make sure MongoDB is running and the MONGO_URI in .env is correct');
 });
 
 mongoose.connection.on('disconnected', () => {
   console.log('❌ MongoDB disconnected');
-  console.log('Check if MongoDB service is running on your machine');
+  console.log('Check if MongoDB service is running');
 });
 
 // Log successful connection events
@@ -102,7 +117,8 @@ mongoose
     console.log("✅ MongoDB connected");
     await seedAdmin();
     const server = app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
+      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
     });
     
     // Handle server errors
@@ -112,7 +128,7 @@ mongoose
   })
   .catch((err) => {
     console.error("❌ MongoDB connection error:", err);
-    console.error('Check your MONGO_URI in .env file and ensure MongoDB is running on your machine');
+    console.error('Check your MONGO_URI in environment variables and ensure MongoDB is accessible');
     process.exit(1); // Exit if can't connect to database
   });
 
