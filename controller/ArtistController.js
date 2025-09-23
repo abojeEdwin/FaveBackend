@@ -106,7 +106,7 @@ export const listSong = async (req, res) =>{
                 releaseDate: song.releaseDate,
                 royaltyPercentage: song.royaltyPercentage,
                 status: SongStatus.STATUS_LOCKED,
-                artist: artistId,
+                artistId: artistId,
                 description: song.description,
                 genre: song.genre,
                 image: song.coverArtUrl,
@@ -185,4 +185,3 @@ const addLiquidity = async (req, res) => {
 }
 
 export default {login, verifyArtist, listSong, addLiquidity};
-
