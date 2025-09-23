@@ -33,8 +33,7 @@ app.use(passport.session());
 // Configure CORS for both development and production
 const allowedOrigins = [
   "http://localhost:3001", // Local development frontend
-  "https://favefrontend.onrender.com", // Update this to your actual frontend URL when deployed
-  // Add your Render frontend URL when you have it
+  // Add your production frontend URL when you have it
   process.env.FRONTEND_URL // Any custom frontend URL from environment variables
 ].filter(Boolean); // Remove any falsy values
 
@@ -55,7 +54,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options(/.*/, cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -68,13 +66,24 @@ app.get("/", (_req, res) => res.send("🚀 Fave Backend API is running..."));
 
 const PORT = process.env.PORT || 3000;
 
-// Add error handling for MongoDB connection
+// Add detailed error handling for MongoDB connection
 mongoose.connection.on('error', err => {
   console.error('❌ MongoDB connection error:', err);
+  console.error('Make sure MongoDB is running on your machine and the MONGO_URI in .env is correct');
 });
 
 mongoose.connection.on('disconnected', () => {
-  console.log(' MongoDB disconnected');
+  console.log('❌ MongoDB disconnected');
+  console.log('Check if MongoDB service is running on your machine');
+});
+
+// Log successful connection events
+mongoose.connection.on('connected', () => {
+  console.log('✅ MongoDB connected successfully');
+});
+
+mongoose.connection.on('reconnected', () => {
+  console.log('✅ MongoDB reconnected');
 });
 
 // Handle process termination
@@ -103,5 +112,36 @@ mongoose
   })
   .catch((err) => {
     console.error("❌ MongoDB connection error:", err);
+    console.error('Check your MONGO_URI in .env file and ensure MongoDB is running on your machine');
     process.exit(1); // Exit if can't connect to database
   });
+
+// Error handling middleware for unhandled errors
+app.use((err, req, res, next) => {
+  console.error('❌ Unhandled error:', err);
+  
+  // Default error response
+  const errorResponse = {
+    error: 'Internal Server Error',
+    message: 'An unexpected error occurred'
+  };
+  
+  // Add more specific error information in development mode
+  if (process.env.NODE_ENV === 'development') {
+    errorResponse.message = err.message;
+    errorResponse.stack = err.stack;
+    errorResponse.details = err.toString();
+  }
+  
+  // Set status code (use err.status if available, otherwise 500)
+  const statusCode = err.status || 500;
+  res.status(statusCode).json(errorResponse);
+});
+
+// Handle 404 routes
+app.use((req, res, next) => {
+  res.status(404).json({
+    error: 'Not Found',
+    message: `Route ${req.method} ${req.url} not found`
+  });
+});

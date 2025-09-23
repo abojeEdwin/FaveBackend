@@ -35,7 +35,11 @@ If you want to use Google OAuth:
 - **Google OAuth not working**: Check that GOOGLE_CALLBACK_URL matches exactly with what's set in Google Cloud Console
 
 ### Local Development
+For detailed instructions on setting up and running both the backend and frontend on localhost, please refer to [README.local.md](README.local.md).
+
+Quick Start:
 1. Clone the repository
 2. Run `npm install`
-3. Create a `.env` file with your environment variables
-4. Run `npm start`
+3. Create a `.env` file with your environment variables (see README.local.md for required variables)
+4. Run `npm start` to start the backend server
+5. In a separate terminal, navigate to the frontend directory and run `npm start` to start the frontend server

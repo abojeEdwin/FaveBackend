@@ -5,7 +5,10 @@ const router = express.Router();
 
 // Google OAuth authentication route
 router.get('/google', 
-  passport.authenticate('google', { scope: ['profile', 'email'] })
+  passport.authenticate('google', { 
+    scope: ['profile', 'email'], 
+    prompt: 'select_account consent' 
+  })
 );
 
 // Google OAuth callback route
@@ -22,10 +25,9 @@ router.get('/google/callback',
     };
     
     // For development, redirect to localhost:3001
-    // For production, you'll need to update this to your deployed frontend URL
-    const frontendUrl = process.env.NODE_ENV === 'production' 
-      ? process.env.FRONTEND_URL || 'https://favefrontend.onrender.com' // Update this to your actual frontend URL when deployed
-      : 'http://localhost:3001';
+    // Determine frontend URL based on environment
+    const frontendUrl = process.env.FRONTEND_URL || 
+      (process.env.NODE_ENV === 'production' ? 'https://favefrontend.onrender.com' : 'http://localhost:3001');
     
     // Redirect to frontend application
     res.redirect(`${frontendUrl}/auth/success?user=${encodeURIComponent(JSON.stringify(userData))}`);
@@ -33,9 +35,14 @@ router.get('/google/callback',
 );
 
 // Logout route
-router.get('/logout', (req, res) => {
-  req.logout(() => {
-    res.json({ message: 'Logged out successfully' });
+router.get('/logout', (req, res, next) => {
+  req.logout((err) => {
+    if (err) { return next(err); }
+    req.session.destroy((err) => {
+      if (err) { return next(err); }
+      res.clearCookie('connect.sid');
+      res.json({ message: 'Logged out successfully' });
+    });
   });
 });
 

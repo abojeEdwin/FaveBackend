@@ -27,6 +27,6 @@ router.get("/callback", async (req, res) => {
 
 
 router.post('/verifyArtist',verifyArtist)
-router.post('/:artistId/listSong', listSong)
+router.post('/:artistId/listSong', listSong);
 
 export default router;
