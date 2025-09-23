@@ -21,9 +21,10 @@ router.get('/google/callback',
       suiAddress: req.user.suiAddress
     };
     
-    // Check if we're in production or development
+    // For development, redirect to localhost:3001
+    // For production, you'll need to update this to your deployed frontend URL
     const frontendUrl = process.env.NODE_ENV === 'production' 
-      ? 'https://favefrontend.onrender.com' // Update this to your actual frontend URL when deployed
+      ? process.env.FRONTEND_URL || 'https://favefrontend.onrender.com' // Update this to your actual frontend URL when deployed
       : 'http://localhost:3001';
     
     // Redirect to frontend application

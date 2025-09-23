@@ -20,7 +20,10 @@ app.use(session({
   secret: process.env.JWT_SECRET || 'fallback_secret_key',
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: process.env.NODE_ENV === 'production' } // Set to true if using HTTPS in production
+  cookie: { 
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+  }
 }));
 
 // Passport middleware
@@ -29,16 +32,19 @@ app.use(passport.session());
 
 // Configure CORS for both development and production
 const allowedOrigins = [
-  "http://localhost:3001",
-  "https://favefrontend.onrender.com" // Update this to your actual frontend URL when deployed
-];
+  "http://localhost:3001", // Local development frontend
+  "https://favefrontend.onrender.com", // Update this to your actual frontend URL when deployed
+  // Add your Render frontend URL when you have it
+  process.env.FRONTEND_URL // Any custom frontend URL from environment variables
+].filter(Boolean); // Remove any falsy values
 
 const corsOptions = {
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.includes(origin)) {
+    // Check if origin is in allowed list
+    if (allowedOrigins.some(allowedOrigin => origin.startsWith(allowedOrigin))) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
