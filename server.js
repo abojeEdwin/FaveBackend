@@ -32,14 +32,20 @@ app.use(passport.session());
 
 const allowedOrigins = [
     "http://localhost:3000", // Local development frontend
+    "http://localhost:3001", // Local development frontend
     process.env.FRONTEND_URL, // Deployed frontend URL from environment variable
 ].filter(Boolean); // Remove any falsy values
 
 const corsOptions = {
     origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
-
-        if (allowedOrigins.some(allowedOrigin => origin.startsWith(allowedOrigin))) {
+        
+        // Check if the origin is in our allowed list
+        if (allowedOrigins.some(allowedOrigin => 
+            origin.startsWith(allowedOrigin) || 
+            (allowedOrigin && origin.includes(allowedOrigin.replace('https://', '').replace('http://', '')))
+        )) {
             callback(null, true);
         } else {
             callback(new Error("Not allowed by CORS"));

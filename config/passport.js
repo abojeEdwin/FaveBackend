@@ -1,5 +1,5 @@
 import passport from 'passport';
-import GoogleStrategy from 'passport-google-oauth20';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import Artist from '../data/models/Artist.js';
 import Fan from '../data/models/Fan.js';
 import Role from '../enum/Role.js';
@@ -7,7 +7,7 @@ import Status from '../enum/Status.js';
 import { Ed25519Keypair } from '@mysten/sui.js/keypairs/ed25519';
 
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.GOOGLE_CALLBACK_URL) {
-  passport.use(new GoogleStrategy.Strategy({
+  passport.use(new GoogleStrategy({
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: process.env.GOOGLE_CALLBACK_URL

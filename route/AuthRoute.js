@@ -21,7 +21,8 @@ router.get('/google/callback',
       suiAddress: req.user.suiAddress
     };
     
-    const frontendUrl = process.env.FRONTEND_URL || 'https://fave-frontend.onrender.com';
+    // Use RENDER_FRONTEND_URL in production, fallback to FRONTEND_URL or localhost
+    const frontendUrl = process.env.RENDER_FRONTEND_URL || process.env.FRONTEND_URL || 'http://localhost:3001';
     
     // Redirect to frontend application
     res.redirect(`${frontendUrl}/auth/success?user=${encodeURIComponent(JSON.stringify(userData))}`);
