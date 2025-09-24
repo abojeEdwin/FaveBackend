@@ -13,12 +13,6 @@ const songSchema = new mongoose.Schema(
         coverArtUrl: { type: String , required: false},
         audioFileUrl: { type: String , required: false},
         royaltyPercentage: { type: Number, required: true },
-        status: {
-            type: String,
-            enum: Object.values(SongStatus),
-            default: SongStatus.STATUS_LOCKED,
-            required: true,
-        },
     },
     { timestamps: true }
 );
