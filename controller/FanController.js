@@ -60,13 +60,11 @@ export const buySong = async (req, res) => {
         const { songId } = req.params;
         const { buyerAddress, userSalt, decodedJwt, partialZkLoginSignature, maxEpoch, paymentCoinId } = req.body;
 
-        // 1. Fetch song from DB
         const song = await Song.findById(songId);
         if (!song) {
             return res.status(404).json({ error: "Song not found" });
         }
 
-        // 2. Fetch artist
         const artist = await Artist.findById(song.artistId);
         if (!artist || artist.isVerified === false) {
             return res.status(400).json({ error: "Invalid or unverified artist" });
@@ -83,37 +81,37 @@ export const buySong = async (req, res) => {
             ],
         });
 
-        const ephemeralKeyPair = new Ed25519Keypair();
-
-        const client = new SuiClient({ url: "https://fullnode.testnet.sui.io" });
-
-        const { bytes, signature: userSignature } = await txb.sign({
-            client,
-            signer: ephemeralKeyPair,
-        });
-        const addressSeed = genAddressSeed(
-            BigInt(userSalt),
-            "sub",
-            decodedJwt.sub,
-            decodedJwt.aud
-        ).toString();
-        const zkLoginSignature = getZkLoginSignature({
-            inputs: {
-                ...partialZkLoginSignature,
-                addressSeed,
-            },
-            maxEpoch,
-            userSignature,
-        });
-        const result = await client.executeTransactionBlock({
-            transactionBlock: bytes,
-            signature: zkLoginSignature,
-        });
-        res.json({
-            success: true,
-            message: "Song purchased successfully",
-            transaction: result,
-        });
+        // const ephemeralKeyPair = new Ed25519Keypair();
+        //
+        // const client = new SuiClient({ url: "https://fullnode.testnet.sui.io" });
+        //
+        // const { bytes, signature: userSignature } = await txb.sign({
+        //     client,
+        //     signer: ephemeralKeyPair,
+        // });
+        // const addressSeed = genAddressSeed(
+        //     BigInt(userSalt),
+        //     "sub",
+        //     decodedJwt.sub,
+        //     decodedJwt.aud
+        // ).toString();
+        // const zkLoginSignature = getZkLoginSignature({
+        //     inputs: {
+        //         ...partialZkLoginSignature,
+        //         addressSeed,
+        //     },
+        //     maxEpoch,
+        //     userSignature,
+        // });
+        // const result = await client.executeTransactionBlock({
+        //     transactionBlock: bytes,
+        //     signature: zkLoginSignature,
+        // });
+        // res.json({
+        //     success: true,
+        //     message: "Song purchased successfully",
+        //     transaction: result,
+        // });
 
     } catch (err) {
         console.error("Error buying song:", err);

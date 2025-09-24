@@ -37,7 +37,6 @@ export const adminRejectArtist = async (req, res) => {
         if (artist.verificationStatus !== Status.PENDING) {
             return res.status(400).json({ error: "Artist is not pending verification" });
         }
-
         artist.verificationStatus = Status.REJECTED;
         await artist.save();
         res.json({ success: true, message: "Artist rejected successfully", artist });

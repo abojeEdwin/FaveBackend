@@ -4,9 +4,6 @@ import {adminVerifyArtist, adminRejectArtist, getPendingArtists} from "../contro
 const router = express.Router();
 
 router.get("/artists/pending", getPendingArtists);
-
 router.put("/artists/:artistId/verify", adminVerifyArtist);
-
 router.put("/artists/:artistId/reject", adminRejectArtist);
-
 export default router;
