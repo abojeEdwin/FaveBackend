@@ -1,3 +1,4 @@
+// route/FanRoute.js
 import express from "express";
 import {login, buySong} from "../controller/FanController.js";
 
