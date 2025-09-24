@@ -1,5 +1,5 @@
 import passport from 'passport';
-import GoogleStrategy from 'passport-google-oauth20';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import Artist from '../data/models/Artist.js';
 import Fan from '../data/models/Fan.js';
 import Role from '../enum/Role.js';
@@ -7,29 +7,30 @@ import Status from '../enum/Status.js';
 import { Ed25519Keypair } from '@mysten/sui.js/keypairs/ed25519';
 
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.GOOGLE_CALLBACK_URL) {
-  passport.use(new GoogleStrategy.Strategy({
+  passport.use(new GoogleStrategy({
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: process.env.GOOGLE_CALLBACK_URL
+      callbackURL: process.env.GOOGLE_CALLBACK_URL,
+      passReqToCallback: true
     },
-    async function(accessToken, refreshToken, profile, done) {
+    async function(req, accessToken, refreshToken, profile, done) {
       try {
-
-        let user = await Artist.findOne({ 'profile.email': profile.emails[0].value });
-        
-        if (!user) {
+        const userRole = req.query.role;
+        let user;
+        if (userRole === 'artist') {
+          user = await Artist.findOne({ 'profile.email': profile.emails[0].value });
+        } else {
           user = await Fan.findOne({ 'profile.email': profile.emails[0].value });
         }
         
         if (user) {
-
           user.lastLogin = new Date();
           await user.save();
           return done(null, user);
         } else {
-
           const keypair = new Ed25519Keypair();
           const suiAddress = keypair.getPublicKey().toSuiAddress();
+<<<<<<< HEAD
           
           const newUser = new Artist({
             authProviderId: profile.id,
@@ -53,6 +54,49 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.
           
           await newUser.save();
           return done(null, newUser);
+=======
+          if (userRole === 'artist') {
+              const newUser = new Artist({
+                authProviderId: profile.id,
+                providerId: profile.id,
+                provider: 'google',
+                profile: { 
+                  name: profile.displayName, 
+                  email: profile.emails[0].value, 
+                  picture: profile.photos[0].value 
+                },
+                role: Role.ARTIST,
+                distributorLink: '',
+                nin: undefined,
+                isVerified: false,
+                verificationStatus: Status.PENDING,
+                suiAddress,
+                suiPrivateKey: keypair.getSecretKey().toString('base64'),
+                createdAt: new Date(),
+                lastLogin: new Date()
+              });
+              await newUser.save();
+              return done(null, newUser);
+          } else {
+              const newUser = new Fan({
+                authProviderId: profile.id,
+                providerId: profile.id,
+                provider: 'google',
+                profile: { 
+                  name: profile.displayName, 
+                  email: profile.emails[0].value, 
+                  picture: profile.photos[0].value 
+                },
+                role: Role.FAN,
+                suiAddress,
+                suiPrivateKey: keypair.getSecretKey().toString('base64'),
+                createdAt: new Date(),
+                lastLogin: new Date()
+              });
+              await newUser.save();
+              return done(null, newUser);
+          }
+>>>>>>> 6c066ccbf4fb51d6c34e271209ea30bb0cbfe344
         }
       } catch (error) {
         return done(error, null);

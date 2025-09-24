@@ -4,34 +4,30 @@ import passport from 'passport';
 const router = express.Router();
 
 // Google OAuth authentication route
-router.get('/google', 
+router.get('/google',
   passport.authenticate('google', { scope: ['profile', 'email'] })
 );
 
 // Google OAuth callback route
-router.get('/google/callback', 
+router.get('/google/callback',
   passport.authenticate('google', { failureRedirect: '/login' }),
   (req, res) => {
-    // Successful authentication, redirect to frontend with user data
-    const userData = {
-      id: req.user._id,
-      name: req.user.profile.name,
-      email: req.user.profile.email,
-      role: req.user.role,
-      suiAddress: req.user.suiAddress
-    };
-    
-    const frontendUrl = process.env.FRONTEND_URL || 'https://fave-frontend.onrender.com';
-    
-    // Redirect to frontend application
-    res.redirect(`${frontendUrl}/auth/success?user=${encodeURIComponent(JSON.stringify(userData))}`);
+    // Successful authentication, the user object is already in the session
+    const frontendUrl = process.env.RENDER_FRONTEND_URL || process.env.FRONTEND_URL || 'http://localhost:3001';
+    res.redirect(`${frontendUrl}/auth/success`);
   }
 );
 
 // Logout route
 router.get('/logout', (req, res) => {
-  req.logout(() => {
-    res.json({ message: 'Logged out successfully' });
+  req.logout((err) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error logging out' });
+    }
+    req.session.destroy(() => {
+        res.clearCookie('connect.sid');
+        res.json({ message: 'Logged out successfully' });
+    });
   });
 });
 

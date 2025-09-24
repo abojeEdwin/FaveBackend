@@ -12,10 +12,8 @@ import adminRouter from "./route/AdminRoute.js"
 // Load environment variables
 dotenv.config();
 
-// Initialize app FIRST
 const app = express();
 
-// Session middleware
 app.use(session({
     secret: process.env.JWT_SECRET || 'fallback_secret_key',
     resave: false,
@@ -26,20 +24,20 @@ app.use(session({
     }
 }));
 
-// Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
 
 const allowedOrigins = [
-    "http://localhost:3000", // Local development frontend
-    process.env.FRONTEND_URL, // Deployed frontend URL from environment variable
-].filter(Boolean); // Remove any falsy values
+    "http://localhost:3000",
+    "http://localhost:3001",
+    process.env.FRONTEND_URL,
+].filter(Boolean);
 
 const corsOptions = {
     origin: (origin, callback) => {
         if (!origin) return callback(null, true);
-
-        if (allowedOrigins.some(allowedOrigin => origin.startsWith(allowedOrigin))) {
+        
+        if (allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
             callback(new Error("Not allowed by CORS"));
@@ -54,7 +52,6 @@ app.options(/.*/, cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
 app.use("/api/artists", artistRouter);
 app.use("/api/fan", fanRouter);
 app.use("/auth", authRouter);
@@ -64,7 +61,6 @@ app.get("/", (_req, res) => res.send("🚀 Fave Backend API is running..."));
 
 const PORT = process.env.PORT || 3000;
 
-// Add error handling for MongoDB connection
 mongoose.connection.on('error', err => {
     console.error('❌ MongoDB connection error:', err);
 });
@@ -73,7 +69,6 @@ mongoose.connection.on('disconnected', () => {
     console.log(' MongoDB disconnected');
 });
 
-// Handle process termination
 process.on('SIGINT', async () => {
     await mongoose.connection.close();
     console.log(' MongoDB connection closed through app termination');
@@ -92,12 +87,11 @@ mongoose
             console.log(`🚀 Server running on http://localhost:${PORT}`);
         });
 
-        // Handle server errors
         server.on('error', (err) => {
             console.error('❌ Server error:', err);
         });
     })
     .catch((err) => {
         console.error("❌ MongoDB connection error:", err);
-        process.exit(1); // Exit if can't connect to database
+        process.exit(1);
     });
