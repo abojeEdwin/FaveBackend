@@ -30,8 +30,6 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.
         } else {
           const keypair = new Ed25519Keypair();
           const suiAddress = keypair.getPublicKey().toSuiAddress();
-<<<<<<< HEAD
-          
           const newUser = new Artist({
             authProviderId: profile.id,
             providerId: profile.id,
@@ -54,7 +52,6 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.
           
           await newUser.save();
           return done(null, newUser);
-=======
           if (userRole === 'artist') {
               const newUser = new Artist({
                 authProviderId: profile.id,
@@ -96,7 +93,6 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.
               await newUser.save();
               return done(null, newUser);
           }
->>>>>>> 6c066ccbf4fb51d6c34e271209ea30bb0cbfe344
         }
       } catch (error) {
         return done(error, null);
