@@ -41,7 +41,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.
               picture: profile.photos[0].value 
             },
             role: Role.ARTIST,
-            distributorLink: '',
+            distributorLink: undefined,
             nin: undefined,
             isVerified: false,
             verificationStatus: Status.PENDING,
