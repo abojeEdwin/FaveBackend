@@ -179,7 +179,7 @@ export const listSong = async (req, res) =>{
     }
 };
 
-const addLiquidity = async (req, res) => {
+export const addLiquidity = async (req, res) => {
     //This function is supposed to interact with the smart contract to fund the wallet in the escrow
     return null;
 }
