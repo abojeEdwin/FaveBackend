@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import jwt_decode from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 import jwkToPem from "jwk-to-pem";
 import dotenv from "dotenv";
 dotenv.config();
@@ -30,7 +30,7 @@ export async function getGooglePublicKeys() {
 
 export async function verifyJWT(token) {
     try {
-        const header = jwt_decode(token, { header: true });
+        const header = jwtDecode(token, { header: true });
         const publicKeys = await getGooglePublicKeys();
 
         const key = publicKeys.keys.find((k) => k.kid === header.kid);
