@@ -5,51 +5,35 @@ import Artist from "../data/models/Artist.js";
 import {Ed25519Keypair} from "@mysten/sui.js/keypairs/ed25519";
 import Role from "../enum/Role.js";
 import Status from "../enum/Status.js";
-import SongStatus from "../enum/SongStatus.js";
 import Song from "../data/models/Song.js";
 
 
-export const login = async (req, res) => {
+export const signup = async (req, res) => {
     try {
-        const {idToken, suiAddress, suiPrivateKey} = req.body;
-        if (!idToken || !suiAddress || !suiPrivateKey) {
-            return res.status(400).json({error: "Missing authentication information"});}
-        const decodedToken = await verifyJWT(idToken);
-        const {sub: authProviderId, email, name, picture} = decodedToken;
-
-        let foundArtist = await Artist.findOne({ providerId: authProviderId });
-        if (!foundArtist) {
-            foundArtist = new Artist({
-                authProviderId,
-                providerId: authProviderId,
-                provider: decodedToken.iss,
-                profile: { name, email, picture },
-                role: Role.ARTIST,
-                distributorLink: undefined,
-                nin: undefined,
-                isVerified: false,
-                verificationStatus: Status.PENDING,
-                suiAddress,
-                suiPrivateKey,
-                createdAt: new Date(),
-            });
-            await foundArtist.save();
-        } else {
-            foundArtist.lastLogin = new Date();
-            await foundArtist.save();}
-        const sessionToken = generateSessionToken(foundArtist._id);
-        res.json({
+        const { address, role } = req.body;
+        if (!address || !role) {
+            return res.status(400).json({ error: "Missing signup information" });}
+        const existingArtist = await Artist.findOne({ suiAddress: address });
+        if (existingArtist) {
+            return res.status(409).json({ error: "Artist already registered" });}
+        const newArtist = new Artist({
+            suiAddress: address,
+            role: Role.ARTIST,
+            lastLogin: new Date(),
+        });
+        await newArtist.save();
+        return res.status(201).json({
             success: true,
-            sessionToken,
             artist: {
-                id: foundArtist._id,
-                suiAddress: foundArtist.suiAddress,
-                profile: foundArtist.profile,
+                id: newArtist._id,
+                suiAddress: newArtist.suiAddress,
+                role: newArtist.role,
+                lastLogin: newArtist.lastLogin,
             },
         });
-    }catch(error){
-        console.error("zkLogin authentication error:", error);
-        res.status(401).json({success: false, error: error.message});
+    } catch (error) {
+        console.error("Signup failed:", error);
+        res.status(500).json({ success: false, error: error.message });
     }
 };
 
@@ -123,9 +107,4 @@ export const listSong = async (req, res) =>{
     }
 };
 
-export const addLiquidity = async (req, res) => {
-    //This function is supposed to interact with the smart contract to fund the wallet in the escrow
-    return null;
-}
-
-export default {login, verifyArtist, listSong, addLiquidity};
+export default {signup, verifyArtist, listSong};

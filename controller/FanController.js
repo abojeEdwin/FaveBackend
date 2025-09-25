@@ -11,46 +11,32 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { genAddressSeed, getZkLoginSignature } from "@mysten/sui/zklogin";
 
 
-
-
-export const login = async (req, res) => {
+export const signup = async (req, res) => {
     try {
-        const {idToken, suiAddress, suiPrivateKey} = req.body;
-        if (!idToken || !suiAddress || !suiPrivateKey) {
-            return res.status(400).json({error: "Missing authentication information"});}
-        const decodedToken = await verifyJWT(idToken);
-        const {sub: authProviderId, email, name, picture} = decodedToken;
-
-        let foundFan = await Fan.findOne({ providerId: authProviderId });
-        if (!foundFan) {
-            foundFan = new Fan({
-                authProviderId,
-                providerId: authProviderId,
-                provider: decodedToken.iss,
-                profile: { name, email, picture },
-                role: Role.FAN,
-                suiAddress,
-                suiPrivateKey,
-                createdAt: new Date(),
-            });
-            await foundFan.save();
-        } else {
-            foundFan.lastLogin = new Date();
-            await foundFan.save();
-        }
-        const sessionToken = generateSessionToken(foundFan._id);
-        res.json({
+        const { address, role } = req.body;
+        if (!address || !role) {
+            return res.status(400).json({ error: "Missing signup information" });}
+        const existingFan = await Fan.findOne({ suiAddress: address });
+        if (existingArtist) {
+            return res.status(409).json({ error: "Fan already registered" });}
+        const newFan = new Fan({
+            suiAddress: address,
+            role: Role.FAN,
+            lastLogin: new Date(),
+        });
+        await newFan.save();
+        return res.status(201).json({
             success: true,
-            sessionToken,
-            artist: {
-                id: foundFan._id,
-                suiAddress: foundFan.suiAddress,
-                profile: foundFan.profile,
+            fan: {
+                id: newFan._id,
+                suiAddress: newFan.suiAddress,
+                role: newFan.role,
+                lastLogin: newFan.lastLogin,
             },
         });
-    }catch(error){
-        console.error("zkLogin authentication error:", error);
-        res.status(401).json({success: false, error: error.message});
+    } catch (error) {
+        console.error("Signup failed:", error);
+        res.status(500).json({ success: false, error: error.message });
     }
 };
 
@@ -75,7 +61,7 @@ export const buySong = async (req, res) => {
             target: "0xYourPackage::marketplace::buy_song",
             arguments: [
                 txb.object(paymentCoinId),
-                txb.pure(song._id.toString()),
+                txb.pure(song._id.toBytes()),
                 txb.pure(artist._id.toString()),
             ],
         });

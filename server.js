@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import artistRouter from "./route/ArtistRoute.js";
 import fanRouter from "./route/FanRoute.js";
 import cors from "cors";
-import authRouter from "./route/AuthRoute.js";
+// import authRouter from "./route/AuthRoute.js";
 import passport from "./config/passport.js";
 import session from "express-session";
 import adminRouter from "./route/AdminRoute.js"
@@ -36,7 +36,7 @@ const allowedOrigins = [
 const corsOptions = {
     origin: (origin, callback) => {
         if (!origin) return callback(null, true);
-        
+
         if (allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
@@ -52,9 +52,9 @@ app.options(/.*/, cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/artists", artistRouter);
-app.use("/api/fan", fanRouter);
-app.use("/auth", authRouter);
+app.use("/api", artistRouter);
+app.use("/api", fanRouter);
+//app.use("/auth", authRouter);
 app.use("/admin", adminRouter)
 
 app.get("/", (_req, res) => res.send("🚀 Fave Backend API is running..."));
