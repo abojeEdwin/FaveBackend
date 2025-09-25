@@ -17,7 +17,7 @@ export const signup = async (req, res) => {
         if (!address || !role) {
             return res.status(400).json({ error: "Missing signup information" });}
         const existingFan = await Fan.findOne({ suiAddress: address });
-        if (existingArtist) {
+        if (existingFan) {
             return res.status(409).json({ error: "Fan already registered" });}
         const newFan = new Fan({
             suiAddress: address,

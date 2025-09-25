@@ -40,10 +40,10 @@ export const signup = async (req, res) => {
 export const verifyArtist = async (req, res) => {
     try {
         const {artistId} = req.params;
-        const {nin, distributorLink} = req.body;
+        const {email,stageName,distributorLink} = req.body;
 
-        if (!nin || !distributorLink) {
-            return res.status(400).json({error: "NIN and distributor link are required"});
+        if (!email || !distributorLink || !email.includes("@") || !stageName) {
+            return res.status(400).json({error: "These fields are required"});
         }
         const artist = await Artist.findById(artistId);
         if (!artist) {
