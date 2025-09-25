@@ -6,34 +6,79 @@ import {Ed25519Keypair} from "@mysten/sui.js/keypairs/ed25519";
 import Role from "../enum/Role.js";
 import Status from "../enum/Status.js";
 import Song from "../data/models/Song.js";
+import Fan from "../data/models/Fan.js";
 
-
-export const signup = async (req, res) => {
+//
+// export const signup = async (req, res) => {
+//     try {
+//         const { address, role } = req.body;
+//         if (!address || !role) {
+//             return res.status(400).json({ error: "Missing signup information" });}
+//         const existingArtist = await Artist.findOne({ suiAddress: address });
+//         if (existingArtist) {
+//             return res.status(409).json({ error: "Artist already registered" });}
+//         const newArtist = new Artist({
+//             suiAddress: address,
+//             role: Role.ARTIST,
+//             lastLogin: new Date(),
+//         });
+//         await newArtist.save();
+//         return res.status(201).json({
+//             success: true,
+//             artist: {
+//                 id: newArtist._id,
+//                 suiAddress: newArtist.suiAddress,
+//                 role: newArtist.role,
+//                 lastLogin: newArtist.lastLogin,
+//             },
+//         });
+//     } catch (error) {
+//         console.error("Signup failed:", error);
+//         res.status(500).json({ success: false, error: error.message });
+//     }
+// };
+export const login = async (req, res) => {
     try {
         const { address, role } = req.body;
         if (!address || !role) {
-            return res.status(400).json({ error: "Missing signup information" });}
-        const existingArtist = await Artist.findOne({ suiAddress: address });
-        if (existingArtist) {
-            return res.status(409).json({ error: "Artist already registered" });}
-        const newArtist = new Artist({
-            suiAddress: address,
-            role: Role.ARTIST,
-            lastLogin: new Date(),
+            return res.status(400).json({ error: "Missing authentication information" });
+        }
+
+        //const normalizedAddress = address.toLowerCase();
+
+        const artistExists = await Artist.findOne({ suiAddress: address });
+        const fanExists = await Fan.findOne({ suiAddress: address });
+
+        if (artistExists && fanExists) {
+            return res.status(400).json({ error: "Address already exists as both fan and artist" });}
+
+        let user = undefined;
+
+        if (role === "ARTIST") {
+            if (fanExists) {
+                return res.status(400).json({ error: "This wallet is already registered as a fan" });
+            }
+            user = artistExists
+                ? artistExists
+                : await Artist.create({ suiAddress: address });
+        } else if (role === "FAN") {
+            if (artistExists) {
+                return res.status(400).json({ error: "This wallet is already registered as an artist" });
+            }
+            user = fanExists
+                ? fanExists
+                : await Fan.create({ suiAddress: address });
+        } else {
+            return res.status(400).json({ error: "Invalid role" });
+        }
+        return res.status(200).json({
+            message: "Login successful",
+            role,
+            user,
         });
-        await newArtist.save();
-        return res.status(201).json({
-            success: true,
-            artist: {
-                id: newArtist._id,
-                suiAddress: newArtist.suiAddress,
-                role: newArtist.role,
-                lastLogin: newArtist.lastLogin,
-            },
-        });
-    } catch (error) {
-        console.error("Signup failed:", error);
-        res.status(500).json({ success: false, error: error.message });
+    } catch (err) {
+        console.error("Login error:", err);
+        return res.status(500).json({ error: "Internal server error" });
     }
 };
 
@@ -107,4 +152,4 @@ export const listSong = async (req, res) =>{
     }
 };
 
-export default {signup, verifyArtist, listSong};
+export default {login, verifyArtist, listSong};
