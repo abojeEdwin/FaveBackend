@@ -2,7 +2,7 @@ import Artist from "../data/models/Artist.js";
 import Song from "../data/models/Song.js";
 import Fan from "../data/models/Fan.js";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
-import { provider, signer } from "./client";
+// import { provider, signer } from "./client";
 
 export const login = async (req, res) => {
     try {
@@ -120,4 +120,4 @@ export const listSong = async (req, res) =>{
     }
 };
 
-export default {login, verifyArtist, listSong};
+export default {login, listSong};
