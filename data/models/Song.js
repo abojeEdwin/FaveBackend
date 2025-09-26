@@ -6,11 +6,10 @@ const songSchema = new mongoose.Schema(
     {
         artistId: { type: mongoose.Schema.Types.ObjectId, ref: "Artist", required: true },
 
-        songName: { type: String, required: true },
-        genre: { type: String , required: true},
+        name: { type: String, required: true },
         description: { type: String ,required: true},
-        releaseDate: { type: Date , required: true},
-        coverArtUrl: { type: String , required: false},
+        image_url: { type: Date , required: true},
+        percentage: { type: String , required: false},
         audioFileUrl: { type: String , required: false},
         royaltyPercentage: { type: Number, required: true },
     },

@@ -10,35 +10,6 @@ import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SuiClient } from '@mysten/sui.js/client';
 import { genAddressSeed, getZkLoginSignature } from "@mysten/sui/zklogin";
 
-//
-// export const signup = async (req, res) => {
-//     try {
-//         const { address, role } = req.body;
-//         if (!address || !role) {
-//             return res.status(400).json({ error: "Missing signup information" });}
-//         const existingFan = await Fan.findOne({ suiAddress: address });
-//         if (existingFan) {
-//             return res.status(409).json({ error: "Fan already registered" });}
-//         const newFan = new Fan({
-//             suiAddress: address,
-//             role: Role.FAN,
-//             lastLogin: new Date(),
-//         });
-//         await newFan.save();
-//         return res.status(201).json({
-//             success: true,
-//             fan: {
-//                 id: newFan._id,
-//                 suiAddress: newFan.suiAddress,
-//                 role: newFan.role,
-//                 lastLogin: newFan.lastLogin,
-//             },
-//         });
-//     } catch (error) {
-//         console.error("Signup failed:", error);
-//         res.status(500).json({ success: false, error: error.message });
-//     }
-// };
 
 export const login = async (req, res) => {
     try {
@@ -46,8 +17,6 @@ export const login = async (req, res) => {
         if (!address || !role) {
             return res.status(400).json({ error: "Missing authentication information" });
         }
-
-        //const normalizedAddress = address.toLowerCase();
 
         const artistExists = await Artist.findOne({ suiAddress: address });
         const fanExists = await Fan.findOne({ suiAddress: address });

@@ -5,11 +5,11 @@ import dotenv from "dotenv";
 import artistRouter from "./route/ArtistRoute.js";
 import fanRouter from "./route/FanRoute.js";
 import cors from "cors";
-// import authRouter from "./route/AuthRoute.js";
+
 import passport from "./config/passport.js";
 import session from "express-session";
 import adminRouter from "./route/AdminRoute.js"
-// Load environment variables
+
 dotenv.config();
 
 const app = express();
@@ -54,7 +54,6 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", artistRouter);
 app.use("/api", fanRouter);
-//app.use("/auth", authRouter);
 app.use("/admin", adminRouter)
 
 app.get("/", (_req, res) => res.send("🚀 Fave Backend API is running..."));
