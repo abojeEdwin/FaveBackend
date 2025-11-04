@@ -2,7 +2,7 @@ import Artist from "../data/models/Artist.js";
 import Song from "../data/models/Song.js";
 import Fan from "../data/models/Fan.js";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
-// import { provider, signer } from "./client";
+import { provider, signer } from "./client";
 
 export const login = async (req, res) => {
     try {
@@ -72,52 +72,52 @@ export const login = async (req, res) => {
 //         res.status(500).json({success: false, error: "Internal server error"});
 //     }
 // };
-export const listSong = async (req, res) =>{
-    try{
-        const{artistId,name,address,image_url,percentage,description}= req.body;
+export const listSong = async (req, res) => {
+    try {
+        const { artistId, percentage } = req.body;
+
+        // Check artist
         const artist = await Artist.findById(artistId);
         if (!artist) {
-            return res.status(404).json({error: "Artist not found"});}
-        const foundSong  = await Song.findOne({title: song.songName});
-        if (!foundSong) {
-            const newSong = new Song({
-                songName: name,
-                imageUrl: image_url,
-                royaltyPercentage: percentage,
-                artistId: artistId,
-                description: description
-            })
-            if(percentage < 1 || percentage > 100){
-                return res.status(400).json({error: "Percentage should not exceed 100 or less than 1 "});
-            }
-            await newSong.save();
-            const tx = new TransactionBlock();
-            tx.moveCall({
-                target: "0xYourPackage::yourModule::create_artist_token",
-                arguments: [
-                    tx.object(witnessId),                  // SONGTOKEN witness object
-                    tx.pure(percentage, "u64"),            // percentage
-                    tx.pure(Array.from(Buffer.from(symbol)), "vector<u8>"),
-                    tx.pure(Array.from(Buffer.from(name)), "vector<u8>"),
-                    tx.pure(Array.from(Buffer.from(description)), "vector<u8>"),
-                    tx.pure(Array.from(Buffer.from(iconUrl)), "vector<u8>"),
-                ],
-            });
+            return res.status(404).json({ error: "Artist not found" });
+        }
 
-            const result = await signer.signAndExecuteTransactionBlock({
-                transactionBlock: tx,
-                options: { showEffects: true },
-            });
-            res.json({success: true, message: "Song listed successfully", newSong});
-            return result
+        // Validate percentage
+        if (percentage < 1 || percentage > 100) {
+            return res.status(400).json({ error: "Percentage must be between 1 and 100" });
         }
-        else{
-            return res.status(400).json({error: "Song already exists, Try listing another song"});
-        }
-    }catch (err){
+
+        // Create a new song document in MongoDB
+        const newSong = new Song({
+            royaltyPercentage: percentage,
+            artistId: artistId,
+        });
+        await newSong.save();
+
+        // Create Move call
+        const tx = new TransactionBlock();
+        tx.moveCall({
+            target: "0xYourPackage::songtoken::create_artist_token", // update with correct package + module
+            arguments: [
+                tx.object("0xTreasuryCapObjectId"), // <-- replace with your actual TreasuryCap<SONGTOKEN> object ID
+                tx.pure(percentage, "u64"),
+            ],
+        });
+
+        const result = await signer.signAndExecuteTransactionBlock({
+            transactionBlock: tx,
+            options: { showEffects: true, showObjectChanges: true },
+        });
+
+        return res.json({
+            success: true,
+            message: "Song listed successfully",
+            newSong,
+            txResult: result,
+        });
+    } catch (err) {
         console.error("Error listing song:", err);
-        res.status(500).json({success: false, error: "Internal server error"});
+        return res.status(500).json({ success: false, error: "Internal server error" });
     }
 };
-
 export default {login, listSong};
